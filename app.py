@@ -46,12 +46,23 @@ def read_excel(uploaded_file, sheet: str):
 
 def df_to_backend_payload(df: pd.DataFrame, limit_rows: int):
     df2 = df.copy()
-    # Make values JSON-safe (avoid NaN/NaT issues)
+
+    # Convert datetime columns to ISO strings
+    for col in df2.columns:
+        if pd.api.types.is_datetime64_any_dtype(df2[col]):
+            df2[col] = df2[col].dt.strftime("%Y-%m-%d %H:%M:%S")
+
+    # Replace NaN / NaT with None (JSON-safe)
     df2 = df2.where(pd.notnull(df2), None)
 
     headers = [str(c) for c in df2.columns.tolist()]
     rows = df2.head(limit_rows).values.tolist()
-    return {"headers": headers, "data": rows}
+
+    return {
+        "headers": headers,
+        "data": rows
+    }
+
 
 def call_colab_analyze(conversation_id: str, message: str, excel_payload: dict):
     url = f"{COLAB_API_BASE}/analyze"
