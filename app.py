@@ -69,24 +69,54 @@ def decisio_brain(df: pd.DataFrame) -> dict:
 
 # 8. Run analysis
 if st.button("Run Decisio"):
-    result = decisio_brain(df)
+    try:
+        # Read uploaded Excel as bytes
+        uploaded_file.seek(0)
+        excel_bytes = uploaded_file.read()
 
-    if "error" in result:
-        st.error(result["error"])
-    else:
-        st.success("Analysis complete")
-        st.write("Total Revenue:", result["total_revenue"])
-        st.write("Recommendation:", result["recommendation"])
+        # Call Colab backend
+        COLAB_API_BASE = "https://5002-m-s-2texs91f0zgsx-b.us-central1-1.prod.colab.dev"  # paste full URL here
 
-        # 9. Write back to Excel
-        output = io.BytesIO()
-        with pd.ExcelWriter(output, engine="openpyxl") as writer:
-            df.to_excel(writer, index=False, sheet_name="ORIGINAL_DATA")
+        resp = requests.post(
+            f"{COLAB_API_BASE}/analyze",
+            files={
+                "file": (
+                    uploaded_file.name,
+                    excel_bytes,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                )
+            },
+            data={"prompt": prompt},
+            timeout=120
+        )
 
-            summary_df = pd.DataFrame([result])
-            summary_df.to_excel(writer, index=False, sheet_name="DECISIO_OUTPUT")
+        resp.raise_for_status()
+        result = resp.json()
 
-        output.seek(0)
+        # ----------------------------
+        # Display results from Colab
+        # ----------------------------
+        st.success("Analysis completed")
+
+        st.subheader("Summary")
+        st.write(result.get("summary", "No summary returned"))
+
+        if "actions" in result:
+            st.subheader("Actions")
+            st.dataframe(result["actions"])
+
+        if "tables" in result:
+            for name, table in result["tables"].items():
+                st.subheader(name)
+                st.dataframe(table)
+
+    except requests.exceptions.RequestException as e:
+        st.error("Failed to connect to backend")
+        st.code(str(e))
+
+    except Exception as e:
+        st.error("Unexpected error")
+        st.code(str(e))
 
         # 10. Download button
         st.download_button(
