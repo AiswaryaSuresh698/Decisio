@@ -8,7 +8,7 @@ st.set_page_config(page_title="Decisio", layout="wide")
 st.title("Decisio — Excel Upload → Colab Brain")
 
 # ✅ Put your Colab public URL here (example: https://xxxxxx-5002.../ )
-COLAB_API_BASE = st.secrets.get("COLAB_API_BASE", "https://5003-m-s-1j12d0m5j9ovh-c.us-west4-0.prod.colab.dev").rstrip("/")
+COLAB_API_BASE = st.secrets.get("COLAB_API_BASE", "https://5002-m-s-1j12d0m5j9ovh-c.us-west4-0.prod.colab.dev").rstrip("/")
 
 # Session-level conversationId (matches your backend requirement)
 if "conversation_id" not in st.session_state:
