@@ -22,7 +22,7 @@ st.title("Decisio — Excel Upload → Templates + Chat Brain")
 
 COLAB_API_BASE = st.secrets.get(
     "COLAB_API_BASE",
-    "https://5002-m-s-1j12d0m5j9ovh-c.us-west4-0.prod.colab.dev"
+    "https://decisio-kaee.onrender.com/"
 ).rstrip("/")
 
 if "conversation_id" not in st.session_state:
