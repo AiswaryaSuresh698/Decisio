@@ -13,6 +13,10 @@ class AnalyzeRequest(BaseModel):
 def health():
     return {"status": "ok"}
 
+@app.get("/")
+def root():
+    return {"message": "Decisio backend running. Use /health, /docs, /analyze"}
+    
 @app.post("/analyze")
 def analyze(req: AnalyzeRequest):
     headers = req.data.get("headers", [])
