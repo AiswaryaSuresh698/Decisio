@@ -96,7 +96,7 @@ Dataset context (JSON):
     try:
         # Responses API is the primary recommended API for new projects. :contentReference[oaicite:2]{index=2}
         resp = openai_client.responses.create(
-            model="gpt-5.2",
+            model="gpt-4.1-mini",
             input=[
                 {"role": "system", "content": system_instructions},
                 {"role": "user", "content": user_input},
